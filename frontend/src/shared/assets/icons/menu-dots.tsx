@@ -1,0 +1,18 @@
+import type { SVGProps } from 'react'
+
+export const MenuDots = (props: SVGProps<SVGSVGElement>) => {
+	return (
+		<svg
+			width="24"
+			height="24"
+			viewBox="0 0 24 24"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			{...props}
+		>
+			<circle cx="12.25" cy="7.25" r="1.25" fill="white" />
+			<circle cx="12.25" cy="12.25" r="1.25" fill="white" />
+			<circle cx="12.25" cy="17.25" r="1.25" fill="white" />
+		</svg>
+	)
+}

@@ -1,0 +1,1 @@
+export const MANIFEST_URL = import.meta.env.VITE_PUBLIC_MANIFEST_URL

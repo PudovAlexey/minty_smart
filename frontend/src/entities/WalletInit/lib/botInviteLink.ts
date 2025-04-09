@@ -1,0 +1,1 @@
+export const BOT_INVITE_LINK = import.meta.env.VITE_PUBLIC_BOT_INVITE_LINK;

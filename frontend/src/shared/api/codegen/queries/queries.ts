@@ -1,0 +1,11 @@
+// generated with @7nohe/openapi-react-query-codegen@2.0.0-beta.3 
+
+import { type Options } from "@hey-api/client-fetch";
+import { useMutation, UseMutationOptions, useQuery, UseQueryOptions } from "@tanstack/react-query";
+import { auth, get, list, update } from "../requests/services.gen";
+import { AuthData, AuthError, GetData, GetError, ListError, UpdateData, UpdateError } from "../requests/types.gen";
+import * as Common from "./common";
+export const useList = <TData = Common.ListDefaultResponse, TError = ListError, TQueryKey extends Array<unknown> = unknown[]>(clientOptions: Options<unknown, true> = {}, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseListKeyFn(clientOptions, queryKey), queryFn: () => list({ ...clientOptions }).then(response => response.data as TData) as TData, ...options });
+export const useGet = <TData = Common.GetDefaultResponse, TError = GetError, TQueryKey extends Array<unknown> = unknown[]>(clientOptions: Options<GetData, true>, queryKey?: TQueryKey, options?: Omit<UseQueryOptions<TData, TError>, "queryKey" | "queryFn">) => useQuery<TData, TError>({ queryKey: Common.UseGetKeyFn(clientOptions, queryKey), queryFn: () => get({ ...clientOptions }).then(response => response.data as TData) as TData, ...options });
+export const useAuth = <TData = Common.AuthMutationResult, TError = AuthError, TQueryKey extends Array<unknown> = unknown[], TContext = unknown>(mutationKey?: TQueryKey, options?: Omit<UseMutationOptions<TData, TError, Options<AuthData, true>, TContext>, "mutationKey" | "mutationFn">) => useMutation<TData, TError, Options<AuthData, true>, TContext>({ mutationKey: Common.UseAuthKeyFn(mutationKey), mutationFn: clientOptions => auth(clientOptions) as unknown as Promise<TData>, ...options });
+export const useUpdate = <TData = Common.UpdateMutationResult, TError = UpdateError, TQueryKey extends Array<unknown> = unknown[], TContext = unknown>(mutationKey?: TQueryKey, options?: Omit<UseMutationOptions<TData, TError, Options<UpdateData, true>, TContext>, "mutationKey" | "mutationFn">) => useMutation<TData, TError, Options<UpdateData, true>, TContext>({ mutationKey: Common.UseUpdateKeyFn(mutationKey), mutationFn: clientOptions => update(clientOptions) as unknown as Promise<TData>, ...options });

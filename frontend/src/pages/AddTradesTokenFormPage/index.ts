@@ -1,0 +1,1 @@
+const AddTradesTokenFormPage = React.lazy(() => import('./ui/AddTradesTokenFormPage'));
