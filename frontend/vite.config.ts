@@ -3,6 +3,13 @@ import alias from '@rollup/plugin-alias';
 import path from 'path';
 
 export default defineConfig({
+  define: {
+    'process': {
+      env: {
+        NODE_DEBUG: false
+      }
+    }
+  },
   // ... другие конфигурации ...
   plugins: [
     alias({

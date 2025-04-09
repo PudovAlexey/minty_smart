@@ -1,6 +1,7 @@
 import { Connection, GetProgramAccountsFilter, Keypair, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js";
 import bs58 from 'bs58';
 import { TokenMintModel } from "../models/TokenMintModel";
+import { Market } from "@project-serum/serum";
 
 class CreateSuppliedTokenInstructions {
     programAddress: PublicKey;
@@ -58,6 +59,24 @@ class CreateSuppliedTokenInstructions {
     }
 
     async getAllSearchingSuppliedTokens(search: string) {
+        const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=92170db0-5a50-4860-910e-5beb6a94bdb7")
+        // let marketAddress = new PublicKey("srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX"); //new
+        let marketAddress = new PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"); //old
+
+        // const market = await connection.getAccountInfo(marketAddress);
+
+        // console.log(market);
+        let programAddress = new PublicKey("GcoKtAmTy5QyuijXSmJKBtFdt99e6Buza18Js7j9AJ6e");
+        let market = await Market.load(connection, programAddress, {}, marketAddress);
+
+            let bids = await market.loadBids(connection);
+            let asks = await market.loadAsks(connection);
+
+
+            for (let [price, size] of bids.getL2(20)) {
+                console.log(price, size);
+              }
+
         const tokenDescriminator = bs58.encode(Buffer.from("supplied_token"));
 
 
