@@ -2,6 +2,7 @@ import { Connection, GetProgramAccountsFilter, Keypair, PublicKey, sendAndConfir
 import bs58 from 'bs58';
 import { TokenMintModel } from "../models/TokenMintModel";
 import { Market } from "@project-serum/serum";
+import { TokenTradesModel } from "../models/TokenTradesModel";
 
 class CreateSuppliedTokenInstructions {
     programAddress: PublicKey;
@@ -14,16 +15,12 @@ class CreateSuppliedTokenInstructions {
 
 
 
-    async processCreateSuppliedTokenTransaction(value: {
+    private async _createSuppliedTokenInstruction(value: {
         name: string,
         symbol: string,
         mint: string
-    }) {
+    }, keypair: Keypair) {
         const transactionData = new TokenMintModel(value).serialize();
-
-        let keypair = Keypair.generate();
-        const airdropSignature = await this.connection.requestAirdrop(keypair.publicKey, 2 * 1e9); // Запрос 2 SOL
-        await this.connection.confirmTransaction(airdropSignature);
 
         const [pda, bump] = await PublicKey.findProgramAddressSync([
             Buffer.from("supplied_token"),
@@ -52,10 +49,93 @@ class CreateSuppliedTokenInstructions {
             data: transactionData,
         });
 
-        const tx = new Transaction().add(insruction);
+        return {
+            insruction,
+            pda,
+        };
 
-        return await sendAndConfirmTransaction(this.connection, tx, [keypair]);
+        // const tx = new Transaction().add(insruction);
 
+        // return await sendAndConfirmTransaction(this.connection, tx, [keypair]);
+
+    }
+
+    private async _createExchangePairInstruction(value: {
+        marketExchangeAddress: string,
+        tokenPair: string,
+        suppliedTokenAccountPda: PublicKey,
+    }, keypair: Keypair) {
+
+        const { marketExchangeAddress, tokenPair } = value;
+
+        const transactionData = new TokenTradesModel({
+            market_exchange_address: marketExchangeAddress,
+            exchange_pair: tokenPair,
+        }).serialize()
+
+        const [pda, bump] = await PublicKey.findProgramAddressSync([
+            Buffer.from("token_pair"),
+            Buffer.from(tokenPair, 'utf-8'),
+        ], this.programAddress);
+
+        const insruction = new TransactionInstruction({
+            keys: [
+                {
+                    pubkey: keypair.publicKey,
+                    isSigner: true,
+                    isWritable: false,
+                },
+                {
+                    pubkey: value.suppliedTokenAccountPda,
+                    isSigner: false,
+                    isWritable: false,
+                },
+                {
+                    pubkey: pda,
+                    isSigner: false,
+                    isWritable: true,
+                },
+                {
+                    pubkey: SystemProgram.programId,
+                    isSigner: false,
+                    isWritable: false,
+                },
+            ],
+            programId: this.programAddress,
+            data: transactionData,
+        });
+
+        return {
+            insruction,
+            pda,
+        };
+    }
+
+    async processInitializeTokenPairTransaction(value: {
+        name: string,
+        symbol: string,
+        mint: string,
+        marketExchangeAddress: string,
+        tokenPair: string,
+    }) {
+        let keypair = Keypair.generate();
+        const airdropSignature = await this.connection.requestAirdrop(keypair.publicKey, 2 * 1e9); // Запрос 2 SOL
+        await this.connection.confirmTransaction(airdropSignature);
+
+        const { pda, insruction: createSuppliedTokenInstruction } = await this._createSuppliedTokenInstruction(value, keypair);
+        const { insruction: createExchangePairInstruction } = await this._createExchangePairInstruction({
+            ...value,
+            suppliedTokenAccountPda: pda,
+        }, keypair)
+
+        const tx = new Transaction()
+        .add(createSuppliedTokenInstruction)
+        .add(createExchangePairInstruction)
+
+        const ix =await sendAndConfirmTransaction(this.connection, tx, [keypair]);
+
+
+        console.log(ix, 'ix');
     }
 
     async getAllSearchingSuppliedTokens(search: string) {
@@ -69,13 +149,13 @@ class CreateSuppliedTokenInstructions {
         let programAddress = new PublicKey("GcoKtAmTy5QyuijXSmJKBtFdt99e6Buza18Js7j9AJ6e");
         let market = await Market.load(connection, programAddress, {}, marketAddress);
 
-            let bids = await market.loadBids(connection);
-            let asks = await market.loadAsks(connection);
+        let bids = await market.loadBids(connection);
+        let asks = await market.loadAsks(connection);
 
 
-            for (let [price, size] of bids.getL2(20)) {
-                console.log(price, size);
-              }
+        for (let [price, size] of bids.getL2(20)) {
+            console.log(price, size);
+        }
 
         const tokenDescriminator = bs58.encode(Buffer.from("supplied_token"));
 

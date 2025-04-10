@@ -1,19 +1,15 @@
-import { suppliedTokensDeserialize, TokenMintModel } from "@features/TokenMint/model/TokenMintModel"
 import { Button } from "@shared/ui/Button/Button"
 import { Input } from "@shared/ui/Input/Input"
-import bs58 from 'bs58';
-import { Connection, Keypair, PublicKey, sendAndConfirmTransaction, SystemProgram, Transaction, TransactionInstruction } from "@solana/web3.js"
 import { useState } from "react"
 import { useInstructionsContext } from "@app/context/InstructionsContext/InstructionsContext";
 
 type FormData = {
     name: string
     symbol: string,
-    mint: string
+    mint: string,
+    marketExchangeAddress: string,
+    tokenPair: string
 }
-
-const PROGRAM_ADDRESS = new PublicKey('6SM1NfcXepFQrCBdVufe93DRnmKrWz6Dg8mk8ixsRFqr');
-const connection = new Connection('http://127.0.0.1:8899', 'confirmed');
 
 function AddTradesTokenFormPage() {
     const {suppliedTokenInstructions} = useInstructionsContext();
@@ -21,11 +17,14 @@ function AddTradesTokenFormPage() {
     const [formData, setFormData] = useState<FormData>({
         name: 'USD Coin',
         symbol: 'USDC',
-        mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+        mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+        marketExchangeAddress: "GcoKtAmTy5QyuijXSmJKBtFdt99e6Buza18Js7j9AJ6e",
+        tokenPair: 'USDT/USD',
+        
     });
 
     const handleTradesTokenSubmit = async () => {
-       await suppliedTokenInstructions?.processCreateSuppliedTokenTransaction(formData)
+       await suppliedTokenInstructions?.processInitializeTokenPairTransaction(formData)
     }
 
 
@@ -35,6 +34,8 @@ function AddTradesTokenFormPage() {
                 <Input onChange={(evt) => setFormData({ ...formData, name: evt.target.value })} value={formData.name} placeholder="Название токена" />
                 <Input onChange={(evt) => setFormData({ ...formData, symbol: evt.target.value })} value={formData.symbol} placeholder="Символ токена" />
                 <Input onChange={(evt) => setFormData({ ...formData, mint: evt.target.value })} value={formData.mint} placeholder="Минт адрес токена токена" />
+                <Input onChange={(evt) => setFormData({ ...formData, marketExchangeAddress: evt.target.value })} value={formData.marketExchangeAddress} placeholder="Адрес цены токена на маркете serum" />
+                <Input onChange={(evt) => setFormData({ ...formData, tokenPair: evt.target.value })} value={formData.tokenPair} placeholder="Название торговой пары" />
             </div>
             <Button onClick={handleTradesTokenSubmit}>Добавить токен</Button>
         </div>
