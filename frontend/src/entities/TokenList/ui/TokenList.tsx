@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { TokenProps } from "../api/types"
-import { useGetTokens } from "../lib/hooks/useGetTokens"
-import { TokenItem } from "./TokenItem";
+import { TokenItem, TokenItemProps } from "./TokenItem";
 import { useInstructionsContext } from "@app/context/InstructionsContext/InstructionsContext";
+import {PublicKey} from '@solana/web3.js';
 
 // {
 // 	image: DogeIcon,
@@ -14,16 +13,6 @@ import { useInstructionsContext } from "@app/context/InstructionsContext/Instruc
 // 	chart: [20, 50, 30, 100, 77, 30, 50, 40, 80, 95, 10],
 // },
 
-type TokenProps = {
-	image: string,
-	token: string,
-	symbol: string,
-	name: string,
-	price: number,
-	change: number,
-	chart: number[],
-}
-
 type TokensListProps = {
 	searchValue: string,
 }
@@ -33,7 +22,7 @@ function TokensList({
 }: TokensListProps) {
 	const { suppliedTokenInstructions } = useInstructionsContext();
 	// const { tokens } = useGetTokens();
-	const [tokens, setTokens] = useState<TokenProps[]>([])
+	const [tokens, setTokens] = useState<TokenItemProps[]>([])
 
 	const handleFetchSuppliedTokens = useCallback(async () => {
 		const data = await suppliedTokenInstructions?.getAllSearchingSuppliedTokens(searchValue);
@@ -42,15 +31,13 @@ function TokensList({
 			setTokens(data.map(({
 				name,
 				symbol,
+				marketAccount,
 				token_mint,
 			}) => ({
-				image: '',
-				token: name,
-				symbol: symbol,
 				name: name,
-				price: 0,
-				change: 0,
-				chart: [],
+				symbol,
+				marketAccount,
+				tokenMint: token_mint,
 			})))
 		}
 	}, [searchValue])

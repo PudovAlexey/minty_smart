@@ -46,12 +46,10 @@ class TokenMintModel {
     deserialize(): {
         name: string,
         symbol: string,
-        token_mint: string
+        token_mint: PublicKey
     } {
         if (this.buffer) {
             return this.borshDeserializeSchema.decode(this.buffer)
-            const {descriminator, ...other} = this.borshDeserializeSchema.decode(this.buffer);
-            return other
         } else {
             throw new Error('Buffer is required')
         }

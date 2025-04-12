@@ -1,12 +1,13 @@
 use borsh::BorshDeserialize;
-use solana_program::{entrypoint::ProgramResult, program_error::ProgramError, pubkey::Pubkey};
+use solana_program::program_error::ProgramError;
 
-use crate::dto::supplied_token::InitializeSuppliedTokenDto;
+use crate::dto::supplied_token::{InitializeSuppliedTokenDto, SupliedTolenPricePairDto};
 
 pub mod supplied_token;
 
 pub enum ProcessInstructions {
     ProcessCreateChank(InitializeSuppliedTokenDto),
+    ProcessCreateExchangePair(SupliedTolenPricePairDto)
 }
 
 impl ProcessInstructions {
@@ -24,6 +25,13 @@ impl ProcessInstructions {
                 ..data
             }))
         },
+        1 => {
+            let data = SupliedTolenPricePairDto::try_from_slice(rest)?;
+
+            Ok(Self::ProcessCreateExchangePair(SupliedTolenPricePairDto {
+                ..data
+            }))
+        }
         _ => return Err(ProgramError::InvalidInstructionData),
     }
     }

@@ -22,3 +22,20 @@ impl SuppliedTokenAccount {
         name_syze + descriminator_syze + symbol_size + next_chang_id
     }
 }
+
+#[derive(BorshSerialize, BorshDeserialize, Clone, Debug)]
+pub struct SupliedTolenPricePair {
+    pub supplied_token_account: Pubkey,
+    pub market_exchange_address: Pubkey,
+    pub exchange_pair: String,
+}
+
+impl SupliedTolenPricePair {
+    pub fn init_space(exchange_pair: &String) -> usize {
+        let name_size = 4 + exchange_pair.as_bytes().len();
+        let market_exchange_address_size = std::mem::size_of::<Pubkey>();
+        let exchange_price_account = std::mem::size_of::<Pubkey>();
+
+        name_size + exchange_price_account + market_exchange_address_size
+    } 
+}

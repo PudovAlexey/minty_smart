@@ -5,7 +5,7 @@ use solana_program::{
     entrypoint,
 };
 
-use crate::instructions::supplied_token::process_create_supplied_token;
+use crate::instructions::supplied_token::{process_create_supplied_token, process_init_supplied_price};
 
 use crate::instructions::ProcessInstructions;
 
@@ -23,6 +23,9 @@ pub fn process_instruction(
     match instruction {
         ProcessInstructions::ProcessCreateChank(chank) => {
             process_create_supplied_token(program_id, accounts, chank)?
+        },
+        ProcessInstructions::ProcessCreateExchangePair(chank) => {
+            process_init_supplied_price(program_id, accounts, chank)?
         },
 
     }

@@ -8,3 +8,9 @@ pub struct InitializeSuppliedTokenDto {
     pub symbol: String,
     pub token_mint: Pubkey,
 }
+
+#[derive(BorshDeserialize, BorshSerialize)]
+pub struct SupliedTolenPricePairDto {
+    pub market_exchange_address: Pubkey,
+    pub exchange_pair: String,
+}

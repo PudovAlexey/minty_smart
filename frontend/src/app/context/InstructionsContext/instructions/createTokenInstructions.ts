@@ -3,6 +3,9 @@ import bs58 from 'bs58';
 import { TokenMintModel } from "../models/TokenMintModel";
 import { Market } from "@project-serum/serum";
 import { TokenTradesModel } from "../models/TokenTradesModel";
+import { TokenListProvider } from '@solana/spl-token-registry';
+// import { findMetadataPda, mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata';
+// import { createUmi } from '@metaplex-foundation/umi-bundle-defaults';
 
 class CreateSuppliedTokenInstructions {
     programAddress: PublicKey;
@@ -129,33 +132,16 @@ class CreateSuppliedTokenInstructions {
         }, keypair)
 
         const tx = new Transaction()
-        .add(createSuppliedTokenInstruction)
-        .add(createExchangePairInstruction)
+            .add(createSuppliedTokenInstruction)
+            .add(createExchangePairInstruction)
 
-        const ix =await sendAndConfirmTransaction(this.connection, tx, [keypair]);
+        const ix = await sendAndConfirmTransaction(this.connection, tx, [keypair]);
 
 
         console.log(ix, 'ix');
     }
 
     async getAllSearchingSuppliedTokens(search: string) {
-        const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=92170db0-5a50-4860-910e-5beb6a94bdb7")
-        // let marketAddress = new PublicKey("srmqPvymJeFKQ4zGQed1GFppgkRHL9kaELCbyksJtPX"); //new
-        let marketAddress = new PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"); //old
-
-        // const market = await connection.getAccountInfo(marketAddress);
-
-        // console.log(market);
-        let programAddress = new PublicKey("GcoKtAmTy5QyuijXSmJKBtFdt99e6Buza18Js7j9AJ6e");
-        let market = await Market.load(connection, programAddress, {}, marketAddress);
-
-        let bids = await market.loadBids(connection);
-        let asks = await market.loadAsks(connection);
-
-
-        for (let [price, size] of bids.getL2(20)) {
-            console.log(price, size);
-        }
 
         const tokenDescriminator = bs58.encode(Buffer.from("supplied_token"));
 
@@ -190,14 +176,48 @@ class CreateSuppliedTokenInstructions {
             }
         );
 
-        const accountsData = accounts.map((account) => {
-            return new TokenMintModel({ buffer: account.account.data }).deserialize()
-        });
+        // const take
 
-        console.log(accounts, 'data');
+        return Promise.all(accounts.map(async (account) => {
+            const [pda] = PublicKey.findProgramAddressSync([
+                Buffer.from("token_pair"),
+                Buffer.from("USDT/USD", 'utf-8')
+            ], this.programAddress);
 
-        return accountsData
+            const programInfo = await this.connection.getAccountInfo(pda);
 
+            const accountData = new TokenTradesModel({ buffer: programInfo?.data }).deserialize();
+
+            return {
+                ...new TokenMintModel({ buffer: account.account.data }).deserialize(),
+                marketAccount: accountData.market_exchange_address,
+            }
+        }, this));
+
+    }
+
+
+    public async getActualPriceAccount(market_exchange_address: PublicKey) {
+        const connection = new Connection("https://mainnet.helius-rpc.com/?api-key=92170db0-5a50-4860-910e-5beb6a94bdb7")
+        let marketAddress = new PublicKey("9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin"); //old
+
+        let market = await Market.load(connection, market_exchange_address, {}, marketAddress);
+
+        let asks = await market.loadAsks(connection);
+
+        const lastPrice = asks.getL2(1);
+
+        return lastPrice[0][0];
+    }
+    
+    public async getMintMetadata(mintAddress: PublicKey) {
+        const tokenList = await new TokenListProvider().resolve();
+        const tokens = tokenList.filterByClusterSlug('mainnet-beta').getList();
+        
+        const usdcMint = mintAddress.toBase58();
+        const usdcToken = tokens.find(token => token.address === usdcMint);
+        
+        return usdcToken?.logoURI || null;
     }
 }
 
