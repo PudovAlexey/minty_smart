@@ -3,13 +3,22 @@ name = "minty-backand"
 version = "0.1.0"
 edition = "2021"
 
-[features]
-no-entrypoint = []
-test-bpf = []
-
 [dependencies]
-solana-program = "2.2.1"
-borsh = "1.5.7"
-
-[lib]
-crate-type = ["cdylib", "lib"]
+axum = "0.8.3"
+axum-server = "0.7.2"
+chrono = {version = "0.4.40", features = ["serde"]}
+deadpool-postgres = "0.14.1"
+diesel = "2.2.9"
+dotenv = "0.15.0"
+serde = {version = "1.0.219", features = ["derive"]}
+serde_json = "1.0.140"
+thiserror = "2.0.12"
+tokio = "1.44.2"
+tokio-postgres = "0.7.13"
+tower = "0.5.2"
+tower-http = "0.6.2"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+utoipa = "5.3.1"
+utoipa-swagger-ui = {version = "9.0.1", features = ["axum"]}
+uuid = {version = "1.16.0", features = ["v4", "serde"]}
