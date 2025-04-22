@@ -5,10 +5,9 @@ use axum::{
 };
 
 use thiserror::Error;
-use std::{
-    fmt::{Display, Formatter, Result as FmtResult},
-    io::{Error as IoError, ErrorKind as IoErrorKind}
-};
+use std::
+    fmt::{Display, Formatter, Result as FmtResult}
+;
 
 use serde::{Deserialize, Serialize};
 

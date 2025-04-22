@@ -6,12 +6,19 @@ edition = "2021"
 [dependencies]
 axum = "0.8.3"
 axum-server = "0.7.2"
+bigdecimal = {version = "0.4.8", features = ["serde"]}
 chrono = {version = "0.4.40", features = ["serde"]}
 deadpool-postgres = "0.14.1"
-diesel = "2.2.9"
+diesel = {version = "2.2.9", features = ["postgres", "r2d2", "chrono", "uuid", "64-column-tables", "numeric", 'serde_json'] }
 dotenv = "0.15.0"
+reqwest = "0.12.15"
+rust_decimal = "1.37.1"
 serde = {version = "1.0.219", features = ["derive"]}
 serde_json = "1.0.140"
+serum_dex = "0.5.4"
+solana-client = "2.2.7"
+solana-program = "1.6.18"
+solana-sdk = "2.2.2"
 thiserror = "2.0.12"
 tokio = "1.44.2"
 tokio-postgres = "0.7.13"
@@ -19,6 +26,6 @@ tower = "0.5.2"
 tower-http = "0.6.2"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-utoipa = "5.3.1"
+utoipa = {version = "5.3.1", features = ["chrono", "uuid"]}
 utoipa-swagger-ui = {version = "9.0.1", features = ["axum"]}
 uuid = {version = "1.16.0", features = ["v4", "serde"]}

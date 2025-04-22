@@ -1,9 +1,9 @@
-use crate::error::AppResult;
-use axum::Json;
+use std::sync::Arc;
 
-use diesel::Selectable;
+use crate::{client::dto::supplied_token::create_supplied_token_dto::{CreateSuppliedTokenBody, CreateSuppliedTokenResponce}, error::AppResult, service::supplied_token::create_supplied_token, AppState};
+use axum::{extract::State, Json};
 use serde::{Deserialize, Serialize};
-use utoipa::{OpenApi, ToSchema};
+use utoipa::ToSchema;
 
 
 #[derive(ToSchema, Serialize, Deserialize)]
@@ -12,27 +12,24 @@ pub struct TestResponse {
     pub name: String,
 }
 
-
-
-// #[derive(OpenApi)]
-// #[openapi(
-//     paths(create_supplied_token_handler)
-// )]
-
 #[utoipa::path(
-    get,
+    post,
     tag = "supplied_token",
-    path = "api/supplied_token/supplied_token",
+    path = "/api/supplied_token/create_supplied_token",
     responses(
-        (status = 200, description = "Количество коллекций для активных кошельков текущего пользователя", body = TestResponse),
+        (status = 200, description = "Создание поддерживаемых кошельков пользователя", body = CreateSuppliedTokenBody),
         (status = 500, description = "Internal server error")
-    )
+    ),
+    request_body=CreateSuppliedTokenBody,
 )]
-pub async fn create_supplied_token_handler() -> AppResult<Json<TestResponse>> {
-    // "Hello, World!"
+pub async fn create_supplied_token_handler(
+    State(state): State<Arc<AppState>>,
+    Json(body): Json<CreateSuppliedTokenBody>,
+) -> AppResult<Json<CreateSuppliedTokenResponce>> {
+    let connection = &mut state.db.get()
+    .expect("Failed connection to POOL");
 
-    Ok(Json(TestResponse {
-        id: "1".to_string(),
-        name: "test".to_string()
-    }))
+    let data = create_supplied_token(body, connection).await?;
+
+    Ok(Json(data))
 }

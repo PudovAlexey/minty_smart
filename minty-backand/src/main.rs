@@ -1,4 +1,5 @@
 use std::net::SocketAddr;
+use service::supplied_token::price_update_queue;
 use tracing::info;
 
 use std::sync::Arc;
@@ -18,6 +19,7 @@ mod db;
 mod entities;
 mod service;
 mod error;
+mod schema;
 
 pub struct AppState {
     pub db: Arc<DbPool>,
@@ -29,12 +31,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt().with_env_filter("debug").init();
     let config = AppConfig::new();
 
-    let db_pool = CreateConnectionPool::new(&config).unwrap();
+    let db_pool = CreateConnectionPool::new(&config);
 
     let shared_state = Arc::new(AppState {
         conf: Arc::new(config),
         db: Arc::new(db_pool.connection_pool.clone()),
     });
+
+    tokio::spawn(price_update_queue(shared_state.clone()));
 
     let router = create_router(shared_state.clone());
 

@@ -1,9 +1,10 @@
-use deadpool_postgres::{Config, ManagerConfig, Pool, RecyclingMethod, Runtime};
-use tokio_postgres::NoTls;
+use diesel::PgConnection;
+use diesel::r2d2::{ConnectionManager, Pool};
 
 use crate::config::AppConfig;
 
-pub type DbPool = Pool;
+
+pub type DbPool = Pool<ConnectionManager<PgConnection>>;
 
 pub struct CreateConnectionPool {
    pub connection_pool: DbPool
@@ -18,27 +19,25 @@ impl CreateConnectionPool {
         PG_DBNAME,
         PG_POOL_MAX_SIZE,
         ..
-    }: &AppConfig) -> Result<Self, Box<dyn std::error::Error>> {
+    }: &AppConfig) -> Self {
+        let database_url = format!(
+            "postgres://{}:{}@{}:{}/{}",
+            PG_USER,
+            PG_PASSWORD,
+            PG_HOST,
+            PG_PORT,
+            PG_DBNAME
+        );
 
-        let mut pool_cfg = Config::new();
-        pool_cfg.host = Some(PG_HOST.to_string());
-        pool_cfg.port = Some(*PG_PORT);
-        pool_cfg.user = Some(PG_USER.to_string());
-        pool_cfg.password = Some(PG_PASSWORD.to_string());
-        pool_cfg.dbname = Some(PG_DBNAME.to_string());
-        pool_cfg.manager = Some(ManagerConfig {
-            recycling_method: RecyclingMethod::Fast,
-        });
-        // pool_cfg.max = max_pool_size;
+        let manager = ConnectionManager::<PgConnection>::new(database_url);
+
+        let pool = Pool::builder()
+        .max_size(*PG_POOL_MAX_SIZE)
+        .build(manager)
+        .unwrap();
     
-       let connection_pool = pool_cfg.create_pool(Some(Runtime::Tokio1), NoTls)
-            .map_err(|e| e.into());
-
-        match connection_pool {
-            Ok(pool) => Ok(Self {
-                connection_pool: pool
-            }),
-            Err(e) => return Err(e)
+        Self {
+            connection_pool: pool,
         }
     }
 }

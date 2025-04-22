@@ -11,11 +11,13 @@ CREATE TABLE IF NOT EXISTS supplied_token (
     token_mint_address TEXT NOT NULL UNIQUE,  -- Уникальный адрес mint
     image_id UUID REFERENCES image(id) ON DELETE SET NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    sol_market_address TEXT NOT NULL UNIQUE -- TODO Добавить
 );
 
 CREATE TABLE IF NOT EXISTS market_pair (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    market_address TEXT NOT NULL, -- TODO Добавить
     exchange_market_address TEXT NOT NULL,
     exchange_pair_name TEXT NOT NULL,
     token_a UUID NOT NULL REFERENCES supplied_token(id) ON DELETE CASCADE,
