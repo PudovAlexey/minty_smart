@@ -1,7 +1,7 @@
 import { Button } from "@shared/ui/Button/Button"
 import { Input } from "@shared/ui/Input/Input"
 import { useState } from "react"
-import { useInstructionsContext } from "@app/context/InstructionsContext/InstructionsContext";
+import { useCreateSuppliedTokenHandler } from "@shared/api/api_schema/queries";
 
 type FormData = {
     name: string
@@ -12,7 +12,7 @@ type FormData = {
 }
 
 function AddTradesTokenFormPage() {
-    const {suppliedTokenInstructions} = useInstructionsContext();
+    const {mutate} = useCreateSuppliedTokenHandler();
 
     const [formData, setFormData] = useState<FormData>({
         name: 'USD Coin',
@@ -24,7 +24,15 @@ function AddTradesTokenFormPage() {
     });
 
     const handleTradesTokenSubmit = async () => {
-       await suppliedTokenInstructions?.processInitializeTokenPairTransaction(formData)
+        mutate({
+            body: {
+                market_address: formData.marketExchangeAddress,
+                mint_address: formData.mint,
+                name: formData.name,
+                symbol: formData.symbol,
+                token_pair: formData.tokenPair,
+            }
+        })
     }
 
 

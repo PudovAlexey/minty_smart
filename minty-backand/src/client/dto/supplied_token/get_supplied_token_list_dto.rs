@@ -12,16 +12,18 @@ pub enum SortByVariants {
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct GetSuppliedListParams {
-    pub page: u32,
-    pub page_size: u32,
-    pub search_value: String,
-    pub period: NaiveDateTime,
-    pub sort_by: SortByVariants,
+    pub page: Option<u32>,
+    pub page_size: Option<u32>,
+    pub search_value: Option<String>,
+    pub period: Option<NaiveDateTime>,
+    pub sort_by: Option<SortByVariants>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct GetSupplietListResponse {
+  pub id: uuid::Uuid,
   pub  image_url: String,
+  pub  symbol: String,
   pub  name: String,
   pub  current_price: f32,
   pub  price_spread: f32,

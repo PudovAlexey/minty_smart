@@ -45,7 +45,9 @@ pub async fn get_supplied_token_list(params: GetSuppliedListParams, connection: 
         let image_url: String = e.image_url.as_ref().map(|s| s.clone()).unwrap_or_else(|| String::from(""));
 
         GetSupplietListResponse {
+            id: e.id,
             image_url,
+            symbol: e.symbol.to_string(),
             name: e.name.to_string(),
             current_price: map_prices[map_prices.len() - 1],
             price_spread:  map_prices[0] - map_prices[map_prices.len() - 1],
@@ -82,43 +84,53 @@ pub async fn create_supplied_token(body: CreateSuppliedTokenBody, connection: &m
     Ok(mock_responce)
 }
 
-pub async fn price_update_queue(state: Arc<AppState>) -> AppResult<()> {
+pub async fn price_update_queue<F>(state: Arc<AppState>, price_update_handler: F) -> AppResult<()> 
+where
+    F: Fn(&Vec<MarketPairToPriceUpdate>) -> (),
+{
     let mut interval = time::interval(Duration::from_secs(60));
     
     loop {
         interval.tick().await;
         let connection = &mut state.db.get()
-        .expect("Failed connection to POOL");
-    let active_token_pairs = get_active_tokens(GetUpdateTokenPairBody {
-        limit: 0,
-        offset: 100,
-    } ,connection).await;
+            .expect("Failed connection to POOL");
+        let active_token_pairs = get_active_tokens(GetUpdateTokenPairBody {
+            limit: 0,
+            offset: 100,
+        }, connection).await;
 
-// let mint_address = String::from("So11111111111111111111111111111111111111112,EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
-let mint_addresses = String::from(&active_token_pairs.iter().map(|f| f.mint_address.to_string()).collect::<Vec<String>>().join(","));
+        let mint_addresses = String::from(&active_token_pairs.iter()
+            .map(|f| f.mint_address.to_string())
+            .collect::<Vec<String>>()
+            .join(","));
 
-let token_list_url = format!("https://lite-api.jup.ag/price/v2?ids={}", mint_addresses);
+        let token_list_url = format!("https://lite-api.jup.ag/price/v2?ids={}", mint_addresses);
 
-let response = reqwest::get(token_list_url).await.unwrap();
-let res_body = response.text().await.unwrap(); 
+        let response = reqwest::get(token_list_url).await.unwrap();
+        let res_body = response.text().await.unwrap(); 
 
+        let pairs_to_update: Vec<MarketPairToPriceUpdate> = active_token_pairs.iter()
+            .map(|GetActiveTokens {
+                id,
+                marketpair_id,
+                mint_address,
+                ..
+            }| {
+                let price: TokenPrice = serde_json::from_str(&res_body).unwrap();
+                let price_dict = price.data.get(mint_address).unwrap();
+                let price = &price_dict.price;
 
-let pairs_to_update: Vec<MarketPairToPriceUpdate> = active_token_pairs.iter().map(|GetActiveTokens {
-    marketpair_id,
-    mint_address,
-    ..
-}| {
-    let price: TokenPrice = serde_json::from_str(&res_body).unwrap();
-    let price_dict = price.data.get(mint_address).unwrap();
-    let price = &price_dict.price;
+                MarketPairToPriceUpdate {
+                    id: *id,
+                    marketpair_id: *marketpair_id,
+                    new_price: price.clone(),
+                }
+            })
+            .collect();
 
-    MarketPairToPriceUpdate {
-        id: *marketpair_id,
-        new_price: price.clone(),
+        
+        price_update_handler(&pairs_to_update);
+
+        update_token_prices_unnest(pairs_to_update, connection).await;
     }
-}).collect();
-
-update_token_prices_unnest( pairs_to_update, connection).await;
-}
-
 }

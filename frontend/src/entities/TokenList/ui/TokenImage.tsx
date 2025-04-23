@@ -4,34 +4,20 @@ import { PublicKey } from "@solana/web3.js"
 import { useEffect, useState } from "react"
 
 export type TokenImageProps = {
-	mintAccount: PublicKey
+	imageUrl: string
 	size: number
 }
 
 function TokenImage({ 
-	mintAccount,
+	imageUrl,
 	size,
  }: TokenImageProps) {
 	const Chain = SOL
 
-	const {suppliedTokenInstructions} = useInstructionsContext();
-
-	const [tokenImage, setTokenImage] = useState('');
-
-	const handleGetTokenImage = async () => {
-		const url = await suppliedTokenInstructions?.getMintMetadata(mintAccount);
-
-		setTokenImage(url || '')
-	}
-
-	useEffect(() => {
-		handleGetTokenImage()
-	}, [])
-
 	return (
 		<div className="relative">
 			<img
-				src={tokenImage}
+				src={imageUrl}
 				width={size}
 				height={size}
 				// quality={100}

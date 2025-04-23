@@ -19,6 +19,8 @@ pub async fn get_supplied_token_query_with_history(
     }: GetSuppliedListParams,
     connection: &mut PooledPg,
 ) -> Vec<GetMarketPairDatabaseResponse> {
+    let page = page.unwrap_or(1);
+    let page_size = page_size.unwrap_or(100);
     let limit = page_size as i32;
     let offset = ((page - 1) * page_size) as i32;
 
@@ -53,6 +55,7 @@ filtered_tokens AS (
              st.symbol ILIKE '%' || $3 || '%')
 )
 SELECT 
+    ft.id AS id,
     img.image_url AS image_url,
     ft.name AS name,
     ft.symbol AS symbol,
@@ -87,6 +90,7 @@ pub async fn get_active_tokens(params: GetUpdateTokenPairBody, connection: &mut 
 
     let query = "
         SELECT 
+    supplied_token.id as id,    
     supplied_token.name AS name,
     supplied_token.token_mint_address AS mint_address,
 	market_pair.id AS marketpair_id
@@ -119,7 +123,7 @@ pub async fn update_token_prices_unnest(
 
     let (ids, prices): (Vec<_>, Vec<_>) = token_pairs
         .iter()
-        .map(|p| (p.id, p.new_price.clone())) // Убедитесь, что new_price имеет тип BigDecimal
+        .map(|p| (p.marketpair_id, p.new_price.clone())) // Убедитесь, что new_price имеет тип BigDecimal
         .unzip();
 
 

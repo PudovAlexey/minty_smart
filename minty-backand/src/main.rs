@@ -1,13 +1,14 @@
 use std::net::SocketAddr;
 use service::supplied_token::price_update_queue;
+use socketioxide::{extract::SocketRef, SocketIo};
 use tracing::info;
 
 use std::sync::Arc;
 
 use axum_server::Server;
 
-use client::router::create_router;
-use db::connection_pool::{CreateConnectionPool, DbPool};
+use client::{router::create_router, socket_entry_point::socket_entry_point};
+use db::{connection_pool::{CreateConnectionPool, DbPool}, model::supplied_token::MarketPairToPriceUpdate};
 
 use crate::config::AppConfig;
 
@@ -29,6 +30,15 @@ pub struct AppState {
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt().with_env_filter("debug").init();
+
+    // io.ns("/", |s: SocketRef| {
+    //     // For each "message" event received, send a "message-back" event with the "Hello World!" event
+    //     s.on("message", |s: SocketRef| {
+    //         println!("Received message");
+    //         s.emit("message-back", "Hello World!").ok();
+    //     });
+    // });
+
     let config = AppConfig::new();
 
     let db_pool = CreateConnectionPool::new(&config);
@@ -38,9 +48,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         db: Arc::new(db_pool.connection_pool.clone()),
     });
 
-    tokio::spawn(price_update_queue(shared_state.clone()));
+    let socket_layer_entrypoint = socket_entry_point(
+        shared_state.clone(),
+    );
 
-    let router = create_router(shared_state.clone());
+    tokio::spawn(price_update_queue(shared_state.clone(), socket_layer_entrypoint.price_handler));
+
+    let router = create_router(shared_state.clone())
+    .layer(socket_layer_entrypoint.layer);
 
     let addr: SocketAddr = format!(
         "{}:{}",

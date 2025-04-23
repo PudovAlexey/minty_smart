@@ -4,34 +4,33 @@ import { TokenBio } from "./TokenBio"
 import { TokenChart } from "./TokenChart"
 import { TokenPrice } from "./TokenPrice"
 import { PublicKey } from "@solana/web3.js"
-
-export type TokenItemProps = {
-	name: string,
-	symbol: string,
-	marketAccount: PublicKey
-	tokenMint: PublicKey
-}
+import { GetSupplietListResponse } from "@shared/api/api_schema/requests"
 
 function TokenItem({
 	name,
-	symbol,
-	marketAccount,
-	tokenMint,
-}: TokenItemProps) {
+	history,
+	current_price,
+	image_url,
+	price_spread
+	// name,
+	// symbol,
+	// marketAccount,
+	// tokenMint,
+}: GetSupplietListResponse) {
 	return (
 		<Link
-			to={`/token/${symbol}`}
+			to={`/token/${name}`}
 			className="h-9 w-full flex items-center justify-between"
 		>
 			<div className="flex items-center justify-center gap-3">
-				<TokenImage mintAccount={tokenMint} size={32} />
+				<TokenImage imageUrl={image_url} size={32} />
 
-				<TokenBio symbol={symbol} name={name} />
+				<TokenBio symbol={name} name={name} />
 			</div>
 
-			{/* <TokenChart change={change} chart={chart} bgFrom={bgFrom} /> */}
+			<TokenChart change={price_spread} chart={history} />
 
-			<TokenPrice marketAccount={marketAccount}  />
+			<TokenPrice price={current_price} change={price_spread}  />
 		</Link>
 	)
 }

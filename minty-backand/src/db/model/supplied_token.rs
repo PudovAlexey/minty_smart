@@ -42,6 +42,8 @@ pub struct MarketPairHistory {
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 pub struct GetMarketPairDatabaseResponse {
+   #[diesel(sql_type = diesel::sql_types::Uuid)]
+  pub id: uuid::Uuid,
    #[diesel(sql_type = diesel::sql_types::Nullable<diesel::sql_types::Text>)]
     pub image_url: Option<String>,
     
@@ -93,14 +95,20 @@ pub struct CreateSuppliedTokenSchemaBody {
  }
 
 
- #[derive(Debug, Clone)]
+ #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
  pub struct MarketPairToPriceUpdate {
    pub id: uuid::Uuid,
+
+   pub marketpair_id: uuid::Uuid,
+   
+   #[schema(value_type = f64)]
    pub new_price: BigDecimal,
 }
 
 #[derive(Serialize, Deserialize, QueryableByName, Debug, Clone)]
 pub struct GetActiveTokens {
+   #[diesel(sql_type = diesel::sql_types::Uuid)]
+   pub id: uuid::Uuid,
 
    #[diesel(sql_type = diesel::sql_types::Text)]
    pub name: String,
