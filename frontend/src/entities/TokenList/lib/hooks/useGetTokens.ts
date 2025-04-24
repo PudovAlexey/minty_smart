@@ -43,12 +43,14 @@ export const useGetTokens = ({
             const tokensToUpdate = tokens.map((item) => {
                 const foundTokenToUpdate = message.find((priceUpdate) => priceUpdate.id === item.id);
 
+                console.log('foundTokenToUpdate', foundTokenToUpdate);
+
                 if (foundTokenToUpdate) {
                     return {
                         ...item,
                         current_price: foundTokenToUpdate.new_price,
-                        history: [...item.history, foundTokenToUpdate.new_price],
-                        price_spread: foundTokenToUpdate.new_price - item.current_price
+                        history: [...item.history, +foundTokenToUpdate.new_price],
+                        price_spread: foundTokenToUpdate.new_price - +item.current_price
 
                     }
                 } else {

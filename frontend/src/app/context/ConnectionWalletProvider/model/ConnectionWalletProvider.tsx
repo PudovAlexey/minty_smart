@@ -1,4 +1,3 @@
-import { TokenType } from "@features/Wallet/api/types";
 import { PropsWithChildren, useMemo, useState, createContext } from "react"
 import { SolanaWalletProvider } from "./wallets/SolanaWalletProvider";
 import { TonWalletProvider } from "./wallets/TonWalletProvider";

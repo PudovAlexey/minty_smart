@@ -7,19 +7,19 @@ import { Copy2 } from "@shared/assets/icons";
 import { trimWallet } from "@shared/lib/formatters/trimWallet";
 import { handleCopy } from "@shared/lib/utils/handleCopy";
 import { Button } from "@shared/ui/Button/Button";
-import { useTonAddress } from "@tonconnect/ui-react";
+// import { useTonAddress } from "@tonconnect/ui-react";
 import { QRCodeCanvas } from "qrcode.react";
 import { useParams } from "react-router";
 
 function WalletAddressPage() {
     const { chain } = useParams();
     const tokenChain = chain as string
-    const address = useTonAddress();
+    // const address = useTonAddress();
     
 	return (
 		<div className="mt-20 flex flex-col items-center h-full px-4">
 			<div className="rounded-32 overflow-hidden p-5 bg-white">
-				<QRCodeCanvas
+				{/* <QRCodeCanvas
 					value={address}
 					size={176}
 					title="address"
@@ -29,7 +29,7 @@ function WalletAddressPage() {
 						height: 34,
 						excavate: true,
 					}}
-				/>
+				/> */}
 			</div>
 
 			<h2 className="font-bold text-2xl mt-5 mb-1">
@@ -44,9 +44,9 @@ function WalletAddressPage() {
 				variant="secondary"
 				size="lg"
 				className="w-full mt-auto mb-24 justify-between px-[18px]"
-				onClick={() => handleCopy(address)}
+				// onClick={() => handleCopy(address)}
 			>
-				{trimWallet(address)}
+				{/* {trimWallet(address)} */}
 
 				<Copy2 />
 			</Button>

@@ -1,75 +1,65 @@
-import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
+// import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
 import { ChainType, WalletInfo } from "../api/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useWallet as solanaWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useWallet as solanaWallet } from "@solana/wallet-adapter-react";
+import {useConnection, useWallet as useSolanaWallet} from "@solana/wallet-adapter-react";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 
-function useWallet() {
-    const [walletInfoLoading, setWalletInfoLoading] = useState(false);
-    const [activeWallet, setActiveWallet] = useState<WalletInfo | null>(null);
-    const existingWallets: WalletInfo[] = [];
-    const solanaWal = solanaWallet();
-    const { connection } = useConnection();
-    const [tonConnectUI] = useTonConnectUI();
-    const tonWall = useTonWallet();
-    const chainConnection = useMemo(() => {
-        if (!!tonWall) {
-            return 'ton'
-        } else if (!!solanaWal.connected) {
-            return 'sol'
-        } else {
-            return null;
-        }
-    }, [tonWall, solanaWal.connected]);
+const JUPITER_API_URL = "https://lite-api.jup.ag/price/v2";
+const SOLANA_MINT_ADDRESS = "So11111111111111111111111111111111111111112";
+const FIAT_API_URL = "https://www.cbr-xml-daily.ru/latest.js"
 
+type UseWalletProps = {
+    balanceConvert?: 'USD' | 'EUR' | 'SOL' | 'TON'
+}
 
-    const handleUploadTonWallet = useCallback(async () => {
-        const address  = tonWall?.account.address || '';
-        const url = `
-		https://toncenter.com/api/v2/getAddressBalance?address=${address}`;
+function useWallet({
+    balanceConvert = 'USD'
+}: UseWalletProps) {
 
-        const res = await fetch(url)
-        .then((res) => res.json());
-        
-            const walletInfo  = {
-                address: address,
-                balance: parseFloat(res.result) / 1e9,
-                chain: 'ton' as ChainType
+    const {connection} = useConnection()
+    const {wallet, publicKey} = useSolanaWallet();
+
+    const [balance, setBalance] = useState(0);
+    const [priceChanged, setPriceChanged] = useState(14);
+
+    const handleGetBalanceInitiate = useCallback(async () => {
+        if (connection && publicKey) {
+            const balance = await connection.getBalance(publicKey);
+            const priceInSolana = balance / LAMPORTS_PER_SOL;
+            const jupiterApi = await fetch(`${JUPITER_API_URL}?ids=${SOLANA_MINT_ADDRESS}`)
+            .then(response => response.json())
+
+            
+            const priceInUSD = +jupiterApi.data[SOLANA_MINT_ADDRESS].price
+            
+            if (balanceConvert == 'USD') {
+                
+                
+                setBalance(priceInUSD * priceInSolana);
+            } else {
+                const fiatPrices = await fetch(FIAT_API_URL)
+                .then(response => response.json());
+
+                const priceConvert = fiatPrices.rates[balanceConvert] / fiatPrices.rates['USD'];
+
+                const newPrice = priceConvert * priceInUSD;
+
+                setBalance(newPrice * priceInSolana);
+
             }
-
-            setActiveWallet(walletInfo)
-    }, []);
-    
-    const handleUploadSolanaWallet = useCallback(async () => {
-        const address = solanaWal.publicKey;
-        const balance = await connection.getBalance(address!);
-        const walletInfo = {
-            address: solanaWal.publicKey?.toString() || '',
-            balance: balance,
-            chain: 'sol' as ChainType
-        };
-    
-        setActiveWallet(walletInfo);
-    }, []);
-
-    const refetchWalletInfo = useCallback(async () => {
-
-    }, [handleUploadTonWallet, handleUploadSolanaWallet]);
+        }
+    }, [connection, publicKey, balanceConvert]);
 
     useEffect(() => {
-        if (chainConnection === 'ton') {
-            handleUploadTonWallet()
-        } else if (chainConnection === 'sol') {
-            handleUploadSolanaWallet()
-        }
-    }, [chainConnection]);
-    
+        handleGetBalanceInitiate()
+    }, [handleGetBalanceInitiate]);
+
     return {
-        activeWallet,
-        existingWallets,
-        chainConnection,
-        walletInfoLoading,
-        refetchWalletInfo
+        balance,
+        priceChanged
     }
+
 }
 
 export {

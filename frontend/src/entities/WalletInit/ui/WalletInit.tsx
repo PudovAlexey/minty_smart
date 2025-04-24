@@ -1,14 +1,14 @@
 import { SOL, TON, WalletArchieve, WalletImport } from '@shared/assets/icons'
 import { Button } from '@shared/ui/Button/Button'
 import { Link, useNavigate } from 'react-router'
-import { useTonConnectUI } from '@tonconnect/ui-react';
+// import { useTonConnectUI } from '@tonconnect/ui-react';
 import { toast } from 'sonner'
 
 import {
     useWalletModal,
     WalletMultiButton,
 } from '@solana/wallet-adapter-react-ui';
-import {useConnection} from '@solana/wallet-adapter-react';
+import {useConnection, useWallet} from '@solana/wallet-adapter-react';
 
 type WalletInitProps = {
 	token: 'sol' | 'ton'
@@ -17,7 +17,7 @@ type WalletInitProps = {
 export const WalletInit = ({ token }: WalletInitProps) => {
 	const navigate = useNavigate();
 	const { connection } = useConnection();
-	const [tonConnectUI] = useTonConnectUI();
+	// const [tonConnectUI] = useTonConnectUI();
 	const walletModal = useWalletModal();
 
 	const Chain = token === 'ton' ? TON : SOL
@@ -28,22 +28,7 @@ export const WalletInit = ({ token }: WalletInitProps) => {
 			: '44.76deg, #9945FF 10.43%, #8752F3 30.84%, #5497D5 49.4%, #43B4CA 58.68%, #28E0B9 69.81%, #19FB9B 93.01%'
 
 	const handleCreateWallet = () => {
-		if (token === 'sol') {
-			walletModal.setVisible(true);
-		} else {
-			tonConnectUI.openModal()
-			tonConnectUI.onStatusChange((el) => {
-				// console.log(el?.account)
-	
-				if (el?.account) {
-					toast.success('Кошелек успешно подключен')
-					navigate('/wallet?active_tab=balance')
-				} else {
-					toast.error('Ошибка подключения кошелька')
-				}
-			})
-
-		}
+		walletModal.setVisible(true);
 	}
 
 	return (

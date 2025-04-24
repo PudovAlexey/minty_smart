@@ -17,7 +17,7 @@ import { RootLayout } from "@shared/ui/RootLayout/RootLayout";
 import { WalletAdapterNetwork } from '@solana/wallet-adapter-base';
 import { QueryClientProvider } from "@tanstack/react-query";
 import { UnsafeBurnerWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
+// import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
 import { useEffect, useMemo, useState } from "react";
 import { createBrowserRouter, Outlet } from "react-router";
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react';

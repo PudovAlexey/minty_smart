@@ -28,7 +28,7 @@ function TokensList({
 
 	return (
 		<>
-			<div className="flex flex-col gap-3 w-full px-4 h-auto overflow-y-scroll scrollbar-hide relative">
+			<div className="flex h-full flex-col gap-3 w-full px-4 h-auto overflow-y-scroll scrollbar-hide relative">
 				{tokens.map((token, index) => (
 					<TokenItem key={index} {...token} />
 				))}
