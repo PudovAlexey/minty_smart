@@ -18,6 +18,11 @@ const navigationItems = [
 		href: '/wallet?balance',
 	},
 	{
+		name: 'P to P',
+		icon: <Wallet />,
+		href: '/peer-to-peer',
+	},
+	{
 		name: 'Profile',
 		icon: <Profile />,
 		href: '/profile',

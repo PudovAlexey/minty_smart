@@ -30,6 +30,7 @@ import { clusterApiUrl } from '@solana/web3.js';
 import '@solana/wallet-adapter-react-ui/styles.css';
 import { App } from "@app/ui/App";
 import AddTradesTokenFormPage from "@pages/AddTradesTokenFormPage/ui/AddTradesTokenFormPage";
+import PeerToPeerPage from "@pages/PeerToPeer/ui/PeerToPeerPage";
 
 function RootElement() {
     return (
@@ -83,6 +84,10 @@ const routerConfig = createBrowserRouter([
             {
                 path: '/token/trade/:id',
                 element: <TokenTradePage />
+            },
+            {
+                path: '/peer-to-peer',
+                element: <PeerToPeerPage />
             },
             {
                 path: '/token/create',

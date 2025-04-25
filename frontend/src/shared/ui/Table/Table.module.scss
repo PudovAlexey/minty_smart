@@ -1,0 +1,60 @@
+.table {
+    :global(.ant-table) {
+        background-color: transparent;
+        :global(.ant-table-cell) {
+            background-color: transparent;
+            color: #B0B0B4;
+        }
+        :global(.ant-table-cell-row-hover) {
+            background-color: transparent;
+        }
+
+    }
+
+}
+
+.table :global(.ant-pagination) {
+    display: flex;
+    justify-content: center;
+}
+
+.table :global(.ant-pagination-item) {
+    background: transparent;
+    border: transparent;
+    & a {
+        color: #B0B0B4;
+    }
+}
+
+.table :global(.ant-pagination-item-active) {
+    border: 2px solid #FF4D4F;
+    & a {
+        color: #FF4D4F !important;
+    }
+
+}
+
+.table :global(.ant-table-cell) {
+    border: none !important;
+
+    &::before {
+        content: "";
+       display: none;
+    }
+}
+
+.table :global(.ant-table-cell-row-hover) {
+    background: transparent !important;
+}
+
+.table :global(.ant-table-cell) {
+    background: #010B13 !important;
+}
+
+.table :global(.ant-empty-image) {
+    display: none;
+}
+
+.table :global(.ant-table-container) {
+    overflow: auto;
+}
