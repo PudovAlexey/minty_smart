@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import alias from '@rollup/plugin-alias';
+import svgr from "vite-plugin-svgr";
 import path from 'path';
 
 export default defineConfig({
@@ -12,6 +13,7 @@ export default defineConfig({
   },
   // ... другие конфигурации ...
   plugins: [
+    svgr(),
     alias({
       entries: [
         { find: '@app', replacement: path.resolve(__dirname, 'src/app') },

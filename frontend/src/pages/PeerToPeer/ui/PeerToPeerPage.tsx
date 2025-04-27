@@ -1,7 +1,14 @@
+
+import cls from './PeerToPeerPage.module.scss';
 import { Table } from '@shared/ui/Table/Table';
 import { usePeerToPeerAvailableTransactions } from './lib/hooks/usePeerToPeerAvailableTransactions';
 import { useMemo } from 'react';
 import { MerchantCell } from '@entities/MerchantCell/ui/MerchantCell';
+import { Button } from '@shared/ui/Button/Button';
+import { OrderLimitCell } from '@entities/OrderLimitCell/OrderLimitCell';
+import { PeerToPeerToolbar } from '@features/PeerToPeerToolbar/ui/PeerToPeerToolbar';
+import { ButtonV2 } from '@shared/ui/ButtonV2/ButtonV2';
+import { Typography } from '@shared/ui/typography';
 
 const columns = [
     {
@@ -15,14 +22,9 @@ const columns = [
         key: 'price',
     },
     {
-        title: 'Available | Order Limit',
+        title: 'Order',
         dataIndex: 'available',
         key: 'available',
-    },
-    {
-        title: 'Token',
-        dataIndex: 'token',
-        key: 'token',
     },
     {
         title: 'Deal',
@@ -34,34 +36,40 @@ const columns = [
 
 
 function PeerToPeerPage() {
-    const {peersToPeers} = usePeerToPeerAvailableTransactions();
+    const { peersToPeers } = usePeerToPeerAvailableTransactions();
 
     const dataSource = useMemo(() => {
         return peersToPeers.map(({
             merchant,
             merchantAvatar,
+            lastTimeUpdate,
             orders,
             isOnline,
-            
+            price,
+            available,
+            orderLimit,
+            token,
 
         }) => ({
-            merchant: <MerchantCell 
+            merchant: <MerchantCell
                 title={merchant}
                 orderCount={orders}
                 isOnline={isOnline}
-                merchantAvatar={merchantAvatar} 
-                // lastTimeUpdate={new Dayjs} 
+                merchantAvatar={merchantAvatar}
+                lastTimeUpdate={lastTimeUpdate}
                 successfullDealsPercent={0}
             />,
-            price: 0,
-            available: 0,
-            token: 0,
+            price: `${price} USD`,
+            available: <OrderLimitCell orderLimit={orderLimit} available={available} token={token} />,
             dataIndex: 0,
+            deal: <ButtonV2>Buy</ButtonV2>,
         }))
     }, [peersToPeers]);
 
     return (
-        <div>
+        <div className={cls.peerToPeerCard}>
+            <Typography.Ubuntu name="H1-U">Buy and Sell with zero commission</Typography.Ubuntu>
+            <PeerToPeerToolbar/>
             <Table dataSource={dataSource} columns={columns} />
         </div>
     )

@@ -1,0 +1,18 @@
+.cellWrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.merchantTeext {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.orders {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}

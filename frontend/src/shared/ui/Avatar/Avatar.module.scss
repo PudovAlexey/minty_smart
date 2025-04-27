@@ -1,0 +1,51 @@
+.avatarWrap {
+    width: max-content;
+    height: max-content;
+    // position: relative;
+}
+
+.defaultAvatar {
+    border-radius: 50%;
+}
+
+.avatarXs {
+    width: 24px;
+    height: 24px;
+}
+
+.avatar {
+    width: 44px;
+    height: 44px;
+}
+.avatarMedium {
+    width: 72px;
+    height: 72px;
+}
+.avatarLarge {
+    width: 150px;
+    height: 150px;
+}
+
+.avatarIcon {
+    // position: absolute;
+    right: 0;
+    bottom: 0;
+    // border: 2px solid #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    background: rgb(214, 209, 209);
+
+    & path {
+        fill: black;
+    }
+}
+
+.imgPlaceholder {
+    border-radius: 50%;
+    background: rgba(255, 232, 191, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

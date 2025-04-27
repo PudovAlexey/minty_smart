@@ -36,6 +36,7 @@
 
 .table :global(.ant-table-cell) {
     border: none !important;
+    padding: 5px !important;
 
     &::before {
         content: "";
@@ -48,7 +49,7 @@
 }
 
 .table :global(.ant-table-cell) {
-    background: #010B13 !important;
+    // background: #010B13 !important;
 }
 
 .table :global(.ant-empty-image) {
