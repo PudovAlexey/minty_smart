@@ -1,6 +1,5 @@
 use std::net::SocketAddr;
 use service::supplied_token::price_update_queue;
-use socketioxide::{extract::SocketRef, SocketIo};
 use tracing::info;
 
 use std::sync::Arc;
@@ -8,7 +7,7 @@ use std::sync::Arc;
 use axum_server::Server;
 
 use client::{router::create_router, socket_entry_point::socket_entry_point};
-use db::{connection_pool::{CreateConnectionPool, DbPool}, model::supplied_token::MarketPairToPriceUpdate};
+use db::connection_pool::{CreateConnectionPool, DbPool};
 
 use crate::config::AppConfig;
 
