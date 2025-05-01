@@ -6,7 +6,7 @@ use std::{collections::HashMap, sync::Arc};
 use serde;
 use tokio::time::{self, Duration};
 
-use crate::{client::dto::supplied_token::{create_supplied_token_dto::{CreateSuppliedTokenBody, CreateSuppliedTokenResponce}, get_supplied_token_list_dto::{GetSuppliedListParams, GetSupplietListResponse}}, db::{model::supplied_token::{CreateSuppliedTokenSchemaBody, GetActiveTokens, GetUpdateTokenPairBody, MarketPair, MarketPairToPriceUpdate}, supplied_token::{create_supplied_token_query::create_supplied_token_query, get_supplied_token_query::{get_active_tokens, get_supplied_token_query_with_history, update_token_prices_unnest}}}, error::AppResult, AppState};
+use crate::{client::dto::supplied_token::{create_supplied_token_dto::{CreateSuppliedTokenBody, CreateSuppliedTokenResponce}, get_supplied_token_list_dto::{GetSuppliedListParams, GetSupplietListResponse}}, db::supplied_token::{create_supplied_token_query::create_supplied_token_query, get_supplied_token_query::{get_active_tokens, get_supplied_token_query_with_history, update_token_prices_unnest}, model::supplied_token_model::{CreateSuppliedTokenSchemaBody, GetActiveTokens, GetUpdateTokenPairBody, MarketPairToPriceUpdate}}, error::AppResult, AppState};
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct TokenInfo {

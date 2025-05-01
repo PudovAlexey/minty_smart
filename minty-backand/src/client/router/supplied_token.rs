@@ -16,7 +16,8 @@ use create_supplied_token_handler::{
     TestResponse
 };
 
-use crate::{client::dto::supplied_token::{create_supplied_token_dto::{CreateSuppliedTokenBody, CreateSuppliedTokenResponce}, get_supplied_token_list_dto::{GetSuppliedListParams, GetSupplietListResponse, SortByVariants}}, db::model::supplied_token::MarketPairToPriceUpdate, AppState};
+use crate::{client::dto::supplied_token::{create_supplied_token_dto::{CreateSuppliedTokenBody, CreateSuppliedTokenResponce}, get_supplied_token_list_dto::{GetSuppliedListParams, GetSupplietListResponse, SortByVariants}}, AppState};
+use crate::db::supplied_token::model::supplied_token_model::MarketPairToPriceUpdate;
 
 #[derive(OpenApi)]
 #[openapi(

@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use diesel::result::Error;
 use diesel::{r2d2::{ConnectionManager, PooledConnection}, PgConnection};
 
-use crate::db::model::supplied_token::{CreateImageSchema, CreateSuppliedTokenSchema, CreateSuppliedTokenSchemaBody};
+use super::model::supplied_token_model::{CreateImageSchema, CreateSuppliedTokenSchema, CreateSuppliedTokenSchemaBody};
 
 
 type PooledPg = PooledConnection<ConnectionManager<PgConnection>>;

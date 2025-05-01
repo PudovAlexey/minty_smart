@@ -4,7 +4,8 @@ use tokio::time::sleep;
 
 use socketioxide::{extract::SocketRef, layer::SocketIoLayer, SocketIo};
 
-use crate::{db::model::supplied_token::MarketPairToPriceUpdate, AppState};
+use crate::db::supplied_token::model::supplied_token_model::MarketPairToPriceUpdate;
+use crate::{AppState};
 
 pub type PriceHandler = dyn Fn(&MarketPairToPriceUpdate) + Send + Sync + 'static;
 

@@ -3,14 +3,28 @@ use std::sync::Arc;
 use bigdecimal::BigDecimal;
 use chrono::NaiveDateTime;
 use utoipa::ToSchema;
-use axum::{extract::State, Json};
+use axum::{extract::{Query, State}, Json};
 
-use crate::{client::dto::peer_to_peer::get_peer_to_peer_list::GetPeerToPeerListResponse, error::AppResult, AppState};
+use crate::{client::dto::{peer_to_peer::get_peer_to_peer_list::GetPeerToPeerListResponse, supplied_token::get_supplied_token_list_dto::GetSuppliedListParams}, error::AppResult, AppState};
 
-pub fn get_peer_to_peer_list(
+
+#[utoipa::path(
+    get,
+    tag = "peer_to_peer",
+    path = "api/peer_to_peer/get_peer_to_peer_list",
+    params(
+        ("page" = Option<i64>, description= "Page number"),
+        ("page_size" = Option<i64>, description= "Page size"),
+        ("search_value" = Option<i64>, description= "Page size"),
+    ),
+    responses(
+        (status = 200, description = "Get supplied token list", body = Vec<GetPeerToPeerListResponse>),
+    )
+)]
+pub async fn get_peer_to_peer_list(
+    params: Query<GetSuppliedListParams>,
     State(state): State<Arc<AppState>>,
-    Json(body): Json<GetPeerToPeerListResponse>,
-) -> AppResult<Vec<GetPeerToPeerListResponse>> {
+) -> AppResult<Json<Vec<GetPeerToPeerListResponse>>> {
     let mock_data: Vec<GetPeerToPeerListResponse> = Vec::from([
         GetPeerToPeerListResponse {
             id: String::from("1"),
@@ -27,5 +41,5 @@ pub fn get_peer_to_peer_list(
         }
     ]);
 
-    Ok(mock_data)
+    Ok(Json(mock_data))
 }

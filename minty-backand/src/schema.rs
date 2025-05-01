@@ -31,6 +31,7 @@ diesel::table! {
 diesel::table! {
     merchant (id) {
         id -> Uuid,
+        user_id -> Uuid,
         merchant_name -> Text,
         description -> Text,
         rating -> Nullable<Numeric>,
@@ -49,7 +50,8 @@ diesel::table! {
         escrow_address -> Text,
         order_amount -> Numeric,
         order_status -> Text,
-        order_id -> Nullable<Uuid>,
+        order_id -> Uuid,
+        user_id -> Uuid,
         created_at -> Nullable<Timestamptz>,
         updated_at -> Nullable<Timestamptz>,
     }
@@ -60,9 +62,9 @@ diesel::table! {
         id -> Uuid,
         description -> Text,
         operation_type -> Text,
-        merchant_id -> Nullable<Uuid>,
+        merchant_id -> Uuid,
         fiat_currency -> Text,
-        asset_type -> Nullable<Uuid>,
+        asset_type -> Uuid,
         asset_amount -> Numeric,
         asset_limit_from -> Numeric,
         asset_limit_to -> Numeric,
@@ -98,7 +100,9 @@ diesel::table! {
 
 diesel::joinable!(market_pair_history -> market_pair (pair_id));
 diesel::joinable!(merchant -> image (image_id));
+diesel::joinable!(merchant -> profile (user_id));
 diesel::joinable!(merchant_active_order -> merchant_order (order_id));
+diesel::joinable!(merchant_active_order -> profile (user_id));
 diesel::joinable!(merchant_order -> merchant (merchant_id));
 diesel::joinable!(merchant_order -> supplied_token (asset_type));
 diesel::joinable!(profile -> image (image_id));

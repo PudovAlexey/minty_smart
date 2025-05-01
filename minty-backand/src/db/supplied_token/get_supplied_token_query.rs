@@ -4,7 +4,8 @@ use diesel::{prelude::*, sql_query};
 use diesel::{r2d2::{ConnectionManager, PooledConnection}, PgConnection};
 
 use crate::client::dto::supplied_token::get_supplied_token_list_dto::GetSuppliedListParams;
-use crate::db::model::supplied_token::{GetActiveTokens, GetMarketPairDatabaseResponse, GetUpdateTokenPairBody, MarketPair, MarketPairToPriceUpdate, SuppliedTokenSchema};
+
+use super::model::supplied_token_model::{GetActiveTokens, GetMarketPairDatabaseResponse, GetUpdateTokenPairBody, MarketPairToPriceUpdate};
 
 // use self::schema::supplied_token::dsl::*;
 
