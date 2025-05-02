@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+diesel = {version = "2.2.9", features = ["postgres", "r2d2", "chrono", "uuid", "64-column-tables", "numeric", 'serde_json'] }
 dotenv = "0.15.0"
+regex = "1.11.1"
 teloxide = {version = "0.15.0", features = ["macros"]}
 tokio = { version =  "1.44.2", features = ["rt-multi-thread", "macros"] }
 tracing = "0.1.41"
