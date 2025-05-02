@@ -1,4 +1,7 @@
-#[derive(Clone)]
+use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
+
+#[derive(Clone, Serialize, Deserialize, ToSchema)]
 pub enum OrderStatus {
     Opened,         // order was created
     UserConfirmed,  // user sent money
@@ -23,6 +26,7 @@ impl From<OrderStatus> for String {
     }
 }
 
+#[derive(Serialize, Deserialize, ToSchema)]
 pub enum OperationType {
     Buy,
     Sell,

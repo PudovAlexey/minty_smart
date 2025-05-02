@@ -40,7 +40,3 @@ pub fn create_supplied_token_query(
         Ok(image_id)
     })
 }
-
-pub async fn update_supplied_tokens_price() {
-    
-}

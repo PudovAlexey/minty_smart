@@ -7,7 +7,7 @@ use super::model::{create_merchant_active_order::{CreateMerchantActiveOrderBody,
 type PooledPg = PooledConnection<ConnectionManager<PgConnection>>;
 
 
-pub fn create_merchant_active_order(
+pub async fn create_merchant_active_order(
     body: CreateMerchantActiveOrderBody,
     connection: &mut PooledPg,
 ) -> Result<uuid::Uuid, diesel::result::Error> {
