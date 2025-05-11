@@ -1,11 +1,10 @@
-use crate::messages::Messages;
-use teloxide::{prelude::Requester, types::Message, Bot};
+pub mod initialize_start;
+pub mod process_check_email;
 
-pub async fn start_instruction(
-    bot: Bot,
-    message: Message
-) {
-    let greeting_message: String = Messages::Greeting.into();
 
-    bot.send_message(message.chat.id, greeting_message).await;
+#[derive(Debug, Clone)]
+pub enum ProcessStartInstruction {
+    StartInstructionStart,
+    AlreadyRegistered,
+    StartRegistrationProcess{email: String},
 }

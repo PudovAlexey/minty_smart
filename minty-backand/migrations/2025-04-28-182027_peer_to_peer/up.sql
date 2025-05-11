@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS profile (
     name TEXT NOT NULL,
     telegram_id TEXT NOT NULL UNIQUE,
     email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
     image_id UUID REFERENCES image(id) ON DELETE SET NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
