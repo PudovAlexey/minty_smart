@@ -25,7 +25,6 @@ pub async fn initialize_start(
 
     let is_already_registered = get_user_by_telegram_id(user_telegram_id, connection);
 
-    
     match is_already_registered {
         Some(_) => {
             let message_keyboard =
@@ -51,8 +50,7 @@ pub async fn initialize_start(
             bot.send_message(msg.chat.id, MessageBuilder::StartMessageNotRegistered)
                 .reply_markup(message_keyboard)
                 .await;
-
-            ProcessStartInstruction::AlreadyRegistered
+            ProcessStartInstruction::InirializeRegistrationProcess
         }
     }
 }

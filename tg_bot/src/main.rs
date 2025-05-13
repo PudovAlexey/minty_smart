@@ -1,9 +1,11 @@
 mod bot_state;
 mod config;
 mod db;
+mod redis;
 mod schema;
 mod instructions;
 mod menu_commands;
+mod mailer;
 mod messages;
 use std::sync::Arc;
 
@@ -11,6 +13,8 @@ use bot_state::BotState;
 use config::AppConfig;
 use db::connection_pool::CreateConnectionPool;
 use instructions::EntryPointProcessor;
+use mailer::smtp_client::MailerClient;
+use redis::RedisClient;
 use teloxide::{
     Bot,
     dispatching::UpdateFilterExt,
@@ -27,8 +31,20 @@ async fn main() {
 
     let connection_pool = CreateConnectionPool::new(app_config.DATABASE_URL);
 
+    let mailer_client =  MailerClient::new(
+        app_config.SMTP_TRANSPORT,
+        app_config.SMTP_USERNAME,
+        app_config.SMTP_PASSWORD,
+    );
+
+    let redis_client = RedisClient::new(
+        app_config.REDIS_PORT,
+    ).unwrap();
+
     let bot_state = Arc::new(BotState {
         db: Arc::new(connection_pool.connection_pool.clone()),
+        mailer_client: Arc::new(mailer_client),
+        redis_client: Arc::new(redis_client),
     });
 
     let entrypoint_processor = Arc::new(tokio::sync::Mutex::new(EntryPointProcessor::new()));
@@ -44,8 +60,8 @@ async fn main() {
                 let processor = processor.clone();
                 let bot_state = bot_state.clone();
                 async move {
-                    println!("Message: {}", msg.text().unwrap_or_default());
                     let mut processor = processor.lock().await;
+                    // println!("Message: {}", msg.text().unwrap_or_default());
                     processor.process_listen_message_instruction(bot, msg, bot_state).await;
                     Ok::<(), teloxide::RequestError>(())
                 }
